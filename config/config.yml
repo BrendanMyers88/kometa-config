@@ -1,0 +1,166 @@
+## This file is a template remove the .template to use the file
+
+libraries:                       # This is called out once within the config.yml file
+  Scheduled:
+    library_name: Movies
+    template_variables:
+      use_separators: false
+    collection_files:
+    - folder: /config/Scheduled
+      asset_directory: config/assets/plex/Collections
+    - default: year
+      asset_directory: config/assets/plex/Collections
+      template_variables:
+        limit: 25
+        sort_by: critic_rating.desc
+        data:
+          starting: current_year-1
+          ending: current_year-1
+        summary_format: Top <<limit>> movies of <<key>>. Sorted by critic rating.
+        collection_section: '010'
+        schedule: range(01/01-02/28)
+      settings:
+        delete_not_scheduled: true
+        asset_directory: config/assets/plex/Movies
+  Movies:
+    schedule_overlays: all[weekly(monday|friday), hourly(06-07)]
+    overlay_files:
+    - url: https://raw.githubusercontent.com/TheChrisK/PMM/main/overlays/Top.yml
+    - url: https://raw.githubusercontent.com/TheChrisK/PMM/main/overlays/Background.yml
+    - default: resolution
+      template_variables:
+        url: https://raw.githubusercontent.com/TheChrisK/PMM/main/overlays/resolution-top-left-45deg/<<overlay_name>>.png
+        horizontal_align: left
+        horizontal_offset: 0
+        vertical_offset: 0
+        vertical_align: top
+        final_horizontal_offset: 0
+        final_vertical_offset: 0
+        back_width: 1000
+        back_height: 1500
+        back_color: 00
+        use_4k_dvhdrplus: true
+        use_dvhdrplus: true
+        use_1080p: false
+        use_720p: false
+        use_576p: false
+        use_480p: false
+        use_edition: true
+    - default: mediastinger
+      template_variables:
+        url: https://raw.githubusercontent.com/TheChrisK/PMM/main/overlays/bottom-left/mediastinger-bottom-left.png
+        vertical_align: bottom
+        vertical_offset: 0
+        horizontal_align: right
+        horizontal_offset: 0
+        back_width: 1000
+        back_height: 1500
+        back_color: 00
+    - default: audio_codec
+      template_variables:
+        url: https://raw.githubusercontent.com/TheChrisK/PMM/main/overlays/audio-top-left-45deg/<<key>>.png
+        horizontal_align: left
+        horizontal_offset: 0
+        vertical_offset: 0
+        vertical_align: top
+        back_width: 1000
+        back_height: 1500
+        back_color: 00
+    collection_files:
+    - default: basic
+    - default: imdb
+    - default: decade
+      asset_directory: config/assets/plex/Collections
+      limit: 100
+      summary_format: Top <<limit>> movies of the <<key>>s. Sorted by critic rating.
+      minimum_items: 10
+    settings:
+      asset_directory: config/assets/plex/Movies
+      asset_depth: 2
+      show_missing_assets: false
+    operations:
+      assets_for_all: true
+  TV Shows:
+    template_variables:
+      use_separator: false
+    overlay_files:
+    - url: https://raw.githubusercontent.com/TheChrisK/PMM/main/overlays/Status.yml #AIRING STATUS OVERLAY CONFIG
+    - default: network
+      template_variables:
+        horizontal_align: left
+        horizontal_offset: 0
+        vertical_offset: 0
+        vertical_align: top
+        back_width: 1000
+        back_height: 1500
+        url: https://raw.githubusercontent.com/TheChrisK/PMM/main/overlays/network-top-left/<<key>>.png
+        back_color: 00
+    operations:
+    - schedule: all[weekly(monday|thursday|saturday), hourly(06-07)]
+      mass_genre_update: tmdb
+      mass_audience_rating_update: imdb
+      mass_critic_rating_update: mdb_tomatoes
+    settings:
+      asset_directory: config/assets/plex/TV Shows
+      asset_depth: 2
+      show_missing_assets: false
+playlist_files:
+- default: playlist                  # This is a file within PMM's defaults folder
+  template_variables:
+    libraries: Movies, TV Shows     # list of libraries that you want the PMM Defaults playlists to look at
+  # see the wiki for how to use local files, folders, URLs, or files from git
+settings:
+  run_order:
+  - operations
+  - metadata
+  - collections
+  - overlays
+  cache: true
+  cache_expiration: 60
+  asset_directory:
+  - config/assets
+  - config/assets/plex/Collections
+  - config/assets/plex/TV Shows
+  - config/assets/plex/Movies
+  asset_folders: true
+  asset_depth: 2
+  create_asset_folders: true
+  prioritize_assets: true
+  dimensional_asset_rename: false
+  download_url_assets: true
+  show_missing_season_assets: false
+  show_missing_episode_assets: false
+  show_asset_not_needed: false
+  sync_mode: append
+  minimum_items: 1
+  default_collection_order:
+  delete_below_minimum: true
+  delete_not_scheduled: false
+  run_again_delay: 2
+  missing_only_released: false
+  only_filter_missing: false
+  show_unmanaged: true
+  show_unconfigured: true
+  show_filtered: false
+  show_options: true
+  show_missing: true
+  show_missing_assets: true
+  save_report: false
+  tvdb_language: eng
+  ignore_ids:
+  ignore_imdb_ids:
+  item_refresh_delay: 0
+  playlist_sync_to_users: all
+  playlist_exclude_users:
+  playlist_report: false
+  verify_ssl: true
+  custom_repo:
+  overlay_artwork_filetype: jpg
+  overlay_artwork_quality:
+webhooks:                        # Can be individually specified per library as well
+  error:
+  version:
+  run_start:
+  run_end:
+  changes:
+  delete:
